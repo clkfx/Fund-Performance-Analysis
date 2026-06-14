@@ -874,8 +874,8 @@ if st.session_state.raw_df is not None and not st.session_state.calc_done:
         # 步骤2: 计算所有基金指标
         progress_bar.progress(30, text="🧮 正在计算全量基金指标...")
         bench_series = hs300_df['benchmark_nav'] if hs300_df is not None else None
-        results_df = raw_df.groupby('FundCode').apply(
-            lambda x: calculate_metrics(x, bench_series)
+        results_df = raw_df.groupby('FundCode', group_keys=False).apply(
+        lambda x: calculate_metrics(x, bench_series)
         ).reset_index(drop=True)
 
         progress_bar.progress(60, text="📊 正在筛选和排序...")
