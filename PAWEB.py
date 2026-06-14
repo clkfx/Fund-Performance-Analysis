@@ -874,9 +874,13 @@ if st.session_state.raw_df is not None and not st.session_state.calc_done:
         # 步骤2: 计算所有基金指标
         progress_bar.progress(30, text="🧮 正在计算全量基金指标...")
         bench_series = hs300_df['benchmark_nav'] if hs300_df is not None else None
-        results_df = raw_df.groupby('FundCode', group_keys=False).apply(
-        lambda x: calculate_metrics(x, bench_series)
-        ).reset_index(drop=True)
+        metrics_list = []
+        for code, grp in raw_df.groupby('FundCode'):
+            res = calculate_metrics(grp, bench_series)
+            if res is not None:
+                metrics_list.append(res)
+
+results_df = pd.DataFrame(metrics_list) if metrics_list else pd.DataFrame()
 
         progress_bar.progress(60, text="📊 正在筛选和排序...")
         results_filtered = results_df[results_df['年限'] > MIN_YEARS_REQUIRED].reset_index(drop=True)
